@@ -1,57 +1,52 @@
-'use strict';
 import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Response } from 'node-fetch';
 
-const s3Client = new S3Client({region: 'us-west-2'});
-
 export const handler = async (event) => {
-  // proof of life
-  // console.log('this is my event', event);
-
-  const Bucket = 'ikesteoger-images';
-  const Key = 'images.json';
+  let s3Client = new S3Client({region: 'us-west-2'});
 
   let name = event.Records[0].s3.object.key;
   let size = event.Records[0].s3.object.size;
-  let type = 'jpg';
-  let newImageObject = { name, size, type };
-  console.log('this is my new imageobject', newImageObject);
-
+  let type = '.jpg';
+  let newImageData = { name, size, type };
+  console.log('this is my new newImageData: ', newImageData);
 
   let params = {
-    Bucket,
-    Key,
+    Bucket: 'ikesteoger-images',
+    Key: 'images.json',
   };
-  console.log('THESE ARE MY PARAMS', params);
 
   let data;
 
   try {
     let s3results = await s3Client.send(new GetObjectCommand(params));
-    const response = new Response (s3results.Body);
+    let response = new Response(s3results.Body);
     data = await response.json();
-    console.log('this is my data from my GET request', data);
-    data.push(newImageObject);
+    // console.log('this is my data from my GET request', data);
   } catch (error) {
-    console.warn('error: ', error);
+    console.log('get object Error: ', error);
+    data = [];
   }
 
-  let newParams = {
+  data.push(newImageData);
+  console.log('this is my data after push: ', data);
+
+  let stringifiedDtails = JSON.stringify(data)
+
+  let putParams = {
     ...params,
-    Body: JSON.stringify(data),
+    Body: stringifiedDtails,
     ContentType: 'application/json',
   }
 
   try {
-    await s3Client.send(new PutObjectCommand(newParams));
+    await s3Client.send(new PutObjectCommand(putParams));
   } catch (error) {
-    console.log('error: ', error);
-
+    console.log('put object error: ', error);
   }
 
   const response = {
     statusCode: 200,
-    body: JSON.stringify('images'),
+    body: stringifiedDtails,
   };
   return response;
 };

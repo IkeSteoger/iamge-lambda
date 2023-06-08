@@ -13,6 +13,7 @@ Create an S3 Bucket with “open” read permissions, so that anyone can see the
 - [GitHub Actions ci/cd](https://github.com/IkeSteoger/image-lambda/actions)
 <!-- - [GUI Deploy url]()
 - [CLI Deploy url]() -->
+[Amazon AWS: Images.json](https://ikesteoger-images.s3.us-west-2.amazonaws.com/images.json)
 
 ### Collaborators
 
@@ -28,10 +29,7 @@ When you upload an image with a `.jpg` extension, it will trigger the lambda.
 
 ### Issues Encountered
 
-Nothing but issues!! I had problems understanding how to properly plug the right things into the right places and for some reason cannot `.push` into the `data`?? I really don't get how this all works. AWS is very confusing.
-
-[https://ikesteoger-images.s3.us-west-2.amazonaws.com/images.json]
-
+I found out I built my `images.json` without using an `[]` on the outside, causing issues with my `.push`. Fixing that was key!
 
 <!-- ### Setup
 
